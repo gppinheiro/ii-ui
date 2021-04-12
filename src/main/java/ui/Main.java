@@ -1,6 +1,4 @@
-package edu.pcc.marc.demoui;
-
-import ui.MainUI;
+package ui;
 
 import javax.swing.*;
 
@@ -16,7 +14,7 @@ public class Main {
     }
 
     private static void createGUI() {
-        var ui = new MainUI();
+        MainUI ui = new MainUI();
         JPanel root = ui.getRootPanel();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
