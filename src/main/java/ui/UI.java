@@ -19,7 +19,7 @@ public class UI {
     //  Armazem TAB
     private JTable ArmazemTable;
 
-    //  Ordens a Fazer Tabela
+    //  Ordens a Fazer TAB
     private JTable OTTable;
 
     //  Transformações a Decorrer TAB
@@ -28,9 +28,7 @@ public class UI {
     //  Transformações Realizadas TAB
     private JTable TRTable;
 
-    private JComboBox<String> DescarregadasComboBox;
-
-    //  Estatisticas
+    //  Estatisticas TAB
     private JTabbedPane EstatisticasTabbedPane;
     private JTable EstatisticasMaquinasTable;
     private JTable EstatisticasDescargasTable;
