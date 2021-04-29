@@ -9,41 +9,59 @@ import javax.swing.table.TableColumnModel;
 import java.sql.SQLException;
 
 public class UI {
-    private JPanel rootPanel;
-    private JTable showTable;
-    private JButton fecharButton;
-    private JComboBox ComboBox;
-    private JList list1;
-    private JScrollPane pane;
-    private JButton atualizarButton;
-    private JTable ShowTable1;
-    private dbConnect db;
+    // Global var for DB
+    private final dbConnect db;
+
+    // Global vars for UI
+    private JPanel Conjunto;
+    // TABS
+    private JTabbedPane TABS;
+    //  Armazem TAB
+    private JTable ArmazemTable;
+
+    //  Ordens a Fazer Tabela
+    private JTable OTTable;
+
+    //  Transformações a Decorrer TAB
+    private JTable TADTable;
+
+    //  Transformações Realizadas TAB
+    private JTable TRTable;
+
+    private JComboBox<String> DescarregadasComboBox;
+
+    //  Estatisticas
+    private JTabbedPane EstatisticasTabbedPane;
+    private JTable EstatisticasMaquinasTable;
+    private JTable EstatisticasDescargasTable;
+
+    // BUTTONS
+    private JPanel Buttons;
+    private JButton ButtonAtualizar;
+    private JButton ButtonFechar;
+    private JTable DescarregadasTable;
 
     public UI(){
         this.db = new dbConnect();
-        createTable();
-        createComboBox();
         try {
-            createShowTable1();
+            createOrdensTransformacao();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        createEstatisticasMaquinas();
     }
 
-    private void createShowTable1() throws SQLException {
+    private void createOrdensTransformacao() throws SQLException {
         Object[][] data = db.getTransform();
-        ShowTable1.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade"}));
+        this.OTTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade"}));
     }
 
-    private void createTable() {
-        Object[][] data={
-                {"Num de Peças"},
-                {"Tempo"}
-        };
+    private void createEstatisticasMaquinas() {
+        Object[][] data={ {"Num de Peças"}, {"Tempo"} };
 
-        showTable.setModel(new DefaultTableModel(data, new String[] {"Peças", "Maquina 1", "Maquina 2", "Maquina 3", "Maquina 4", "Maquina 5", "Maquina 6", "Maquina 7", "Maquina 8" }));
+        this.EstatisticasMaquinasTable.setModel(new DefaultTableModel(data, new String[] {"Peças", "Maquina 1", "Maquina 2", "Maquina 3", "Maquina 4", "Maquina 5", "Maquina 6", "Maquina 7", "Maquina 8" }));
 
-        TableColumnModel columns =showTable.getColumnModel();
+        TableColumnModel columns = this.EstatisticasMaquinasTable.getColumnModel();
         columns.getColumn(0).setMinWidth(100);
         columns.getColumn(1).setMinWidth(50);
         columns.getColumn(2).setMinWidth(50);
@@ -67,11 +85,7 @@ public class UI {
 
     }
 
-    private void createComboBox(){
-        ComboBox.setModel(new DefaultComboBoxModel(new String[]{"tapete superior", "tapete inferior"}));
-    }
-
     public JPanel getRootPanel() {
-        return rootPanel;
+        return Conjunto;
     }
 }
