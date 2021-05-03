@@ -43,6 +43,7 @@ public class UI {
         this.db = new dbConnect();
         try {
             createOrdensTransformacao();
+            createTransformacaoDecorrer();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -52,6 +53,11 @@ public class UI {
     private void createOrdensTransformacao() throws SQLException {
         Object[][] data = db.getTransform();
         this.OTTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade"}));
+    }
+
+    private void createTransformacaoDecorrer() throws SQLException {
+        Object[][] data = db.getElapseTransform();
+        this.TADTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade"}));
     }
 
     private void createEstatisticasMaquinas() {

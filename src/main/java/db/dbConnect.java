@@ -84,5 +84,26 @@ public class dbConnect {
         return data;
     }
 
+    public Object[][] getElapseTransform() throws SQLException {
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"Transform\";");
+        ResultSet rs = s.executeQuery();
+        rs.next();
+        Object[][] data = new Object[rs.getInt(1)][4];
+
+        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"from\", \"to\", quantity FROM ii.\"ElapseTransform\";");
+        rs = s.executeQuery();
+
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getInt(1);
+            data[i][1] = rs.getInt(2);
+            data[i][2] = rs.getInt(3);
+            data[i][3] = rs.getInt(4);
+            i++;
+        }
+
+        return data;
+    }
+
 }
 
