@@ -85,7 +85,7 @@ public class dbConnect {
     }
 
     public Object[][] getElapseTransform() throws SQLException {
-        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"Transform\";");
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"ElapseTransform\";");
         ResultSet rs = s.executeQuery();
         rs.next();
         Object[][] data = new Object[rs.getInt(1)][4];
