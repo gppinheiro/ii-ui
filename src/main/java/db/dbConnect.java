@@ -50,26 +50,112 @@ public class dbConnect {
         return DriverManager.getConnection(dbUrl, username, password);
     }
 
-    /**
-     * Method to get DB Connection.
-     * @return DB Connection.
-     */
-    public Connection getConn() {
-        return this.conn;
-    }
-
-    public void searchPath() throws SQLException {
-        PreparedStatement s = this.conn.prepareStatement("SET search_path TO ii;");
-        s.executeUpdate();
-    }
-
     public Object[][] getTransform() throws SQLException {
         PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"Transform\";");
         ResultSet rs = s.executeQuery();
         rs.next();
+        Object[][] data = new Object[rs.getInt(1)][8];
+
+        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"from\", \"to\", quantity, \"MaxDelay\", penalty, \"timeMES\", \"TransformTimeExcepted\" FROM ii.\"Transform\";");
+        rs = s.executeQuery();
+
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getInt(1);
+            data[i][1] = rs.getInt(2);
+            data[i][2] = rs.getInt(3);
+            data[i][3] = rs.getInt(4);
+            data[i][4] = rs.getInt(5);
+            data[i][5] = rs.getInt(6);
+            data[i][6] = rs.getInt(7);
+            data[i][7] = rs.getInt(8);
+            i++;
+        }
+
+        return data;
+    }
+
+    public Object[][] getElapseTransform() throws SQLException {
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"ElapseTransform\";");
+        ResultSet rs = s.executeQuery();
+        rs.next();
+        Object[][] data = new Object[rs.getInt(1)][9];
+
+        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"from\", \"to\", quantity, \"MaxDelay\", penalty, \"timeMES\", side, st FROM ii.\"ElapseTransform\";");
+        rs = s.executeQuery();
+
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getInt(1);
+            data[i][1] = rs.getInt(2);
+            data[i][2] = rs.getInt(3);
+            data[i][3] = rs.getInt(4);
+            data[i][4] = rs.getInt(5);
+            data[i][5] = rs.getInt(6);
+            data[i][6] = rs.getInt(7);
+            data[i][7] = rs.getString(8);
+            data[i][8] = rs.getInt(9);
+            i++;
+        }
+
+        return data;
+    }
+
+    public  Object[][] getEndTransform() throws SQLException {
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"EndTransform\";");
+        ResultSet rs = s.executeQuery();
+        rs.next();
+        Object[][] data = new Object[rs.getInt(1)][12];
+
+        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"from\", \"to\", quantity, \"MaxDelay\", \"InitialPenalty\", \"timeMES\", \"TransformSide\", st, et, \"TransformTime\", penalty FROM ii.\"EndTransform\";");
+        rs = s.executeQuery();
+
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getInt(1);
+            data[i][1] = rs.getInt(2);
+            data[i][2] = rs.getInt(3);
+            data[i][3] = rs.getInt(4);
+            data[i][4] = rs.getInt(5);
+            data[i][5] = rs.getInt(6);
+            data[i][6] = rs.getInt(7);
+            data[i][7] = rs.getString(8);
+            data[i][8] = rs.getInt(9);
+            data[i][9] = rs.getInt(10);
+            data[i][10] = rs.getInt(11);
+            data[i][11] = rs.getInt(12);
+            i++;
+        }
+
+        return data;
+    }
+
+    public Object[][] getCurrentStores() throws SQLException {
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"CurrentStores\";");
+        ResultSet rs = s.executeQuery();
+        rs.next();
+        Object[][] data = new Object[rs.getInt(1)][2];
+
+        s = this.conn.prepareStatement("SELECT \"type\", quantity FROM ii.\"CurrentStores\";");
+        rs = s.executeQuery();
+
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getInt(1);
+            data[i][1] = rs.getInt(2);
+            i++;
+        }
+
+        return data;
+    }
+
+    public Object[][] getUnloaded() throws SQLException {
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"EndUnload\";");
+        ResultSet rs = s.executeQuery();
+        rs.next();
         Object[][] data = new Object[rs.getInt(1)][4];
 
-        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"from\", \"to\", quantity FROM ii.\"Transform\";");
+        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"type\", \"destination\", \"quantity\" FROM ii.\"EndUnload\";");
         rs = s.executeQuery();
 
         int i=0;
@@ -84,13 +170,13 @@ public class dbConnect {
         return data;
     }
 
-    public Object[][] getElapseTransform() throws SQLException {
-        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"ElapseTransform\";");
+    public Object[][] getUnload() throws  SQLException {
+        PreparedStatement s = this.conn.prepareStatement("SELECT COUNT(*) FROM ii.\"Unload\";");
         ResultSet rs = s.executeQuery();
         rs.next();
         Object[][] data = new Object[rs.getInt(1)][4];
 
-        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"from\", \"to\", quantity FROM ii.\"ElapseTransform\";");
+        s = this.conn.prepareStatement("SELECT \"OrderNumber\", \"type\", \"destination\", \"quantity\"  FROM ii.\"Unload\";");
         rs = s.executeQuery();
 
         int i=0;
@@ -99,6 +185,68 @@ public class dbConnect {
             data[i][1] = rs.getInt(2);
             data[i][2] = rs.getInt(3);
             data[i][3] = rs.getInt(4);
+            i++;
+        }
+
+        return data;
+    }
+
+    public Object[][] getMaquinas() throws SQLException {
+        Object[][] data = new Object[8][10];
+
+        PreparedStatement s = this.conn.prepareStatement("SELECT  \"machine\", \"t1\", \"t2\", \"t3\", \"t4\", \"t5\", \"t6\", \"t7\", \"t8\", \"total\" FROM ii.\"MachinesStatistic\";");
+        ResultSet rs = s.executeQuery();
+
+        return getObjects(rs, data);
+    }
+
+    public Object[][] getTemposMaquinas() throws SQLException {
+        Object[][] data = new Object[8][10];
+
+        PreparedStatement s = this.conn.prepareStatement("SELECT  \"machine\", \"t1\", \"t2\", \"t3\", \"t4\", \"t5\", \"t6\", \"t7\", \"t8\", \"total\" FROM ii.\"MachinesTimes\";");
+        ResultSet rs = s.executeQuery();
+
+        return getObjects(rs, data);
+    }
+
+    private Object[][] getObjects(ResultSet rs, Object[][] data) throws SQLException {
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getString(1);
+            data[i][1] = rs.getInt(2);
+            data[i][2] = rs.getInt(3);
+            data[i][3] = rs.getInt(4);
+            data[i][4] = rs.getInt(5);
+            data[i][5] = rs.getInt(6);
+            data[i][6] = rs.getInt(7);
+            data[i][7] = rs.getInt(8);
+            data[i][8] = rs.getInt(9);
+            data[i][9] = rs.getInt(10);
+            i++;
+        }
+
+        return data;
+    }
+
+    public Object[][] getPusher() throws SQLException{
+        Object[][] data = new Object[3][11];
+
+        PreparedStatement s = this.conn.prepareStatement("SELECT  \"pusher\", \"p1\", \"p2\", \"p3\", \"p4\", \"p5\", \"p6\", \"p7\", \"p8\", \"p9\", \"total\" FROM ii.\"PushersStatistic\";");
+        ResultSet rs = s.executeQuery();
+
+        int i=0;
+        while (rs.next()) {
+            data[i][0] = rs.getString(1);
+            data[i][1] = rs.getInt(2);
+            data[i][2] = rs.getInt(3);
+            data[i][3] = rs.getInt(4);
+            data[i][4] = rs.getInt(5);
+            data[i][5] = rs.getInt(6);
+            data[i][6] = rs.getInt(7);
+            data[i][7] = rs.getInt(8);
+            data[i][8] = rs.getInt(9);
+            data[i][9] = rs.getInt(10);
+            data[i][10] = rs.getInt(11);
             i++;
         }
 

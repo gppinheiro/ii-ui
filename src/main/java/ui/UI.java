@@ -6,9 +6,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
-public class UI {
+public class UI implements ActionListener {
     // Global var for DB
     private final dbConnect db;
 
@@ -28,68 +30,104 @@ public class UI {
     //  Transformações Realizadas TAB
     private JTable TRTable;
 
-    //  Estatisticas TAB
-    private JTabbedPane EstatisticasTabbedPane;
-    private JTable EstatisticasMaquinasTable;
-    private JTable EstatisticasDescargasTable;
+    // MAquinas Stats
+    private JTable TablesMaquina;
 
     // BUTTONS
     private JPanel Buttons;
     private JButton ButtonAtualizar;
     private JButton ButtonFechar;
     private JTable DescarregadasTable;
+    private JTabbedPane tabbedPane3;
+    private JTabbedPane tabbedPane1;
+    private JTable DescargasADecorrer;
+    private JTabbedPane tabbedPane2;
+    private JTable TablesPusher;
+    private JTable TablesTemposMaquinas;
 
     public UI(){
         this.db = new dbConnect();
-        try {
-            createOrdensTransformacao();
-            createTransformacaoDecorrer();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        ButtonAtualizar.addActionListener(this::actionPerformed);
+        ButtonFechar.addActionListener(this::actionPerformed2);
+    }
+
+    public void actionPerformed(ActionEvent e){
+        if(e.getSource()==ButtonAtualizar) {
+            try {
+                createOrdensTransformacao();
+                createTransformacaoDecorrer();
+                createArmazem();
+                createTransformacaoRealizadas();
+                createDescarregadas();
+                createDescargasARealizar();
+                createMaquinas();
+                createTemposMaquinas();
+                createPusher();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
-        createEstatisticasMaquinas();
+
     }
 
-    private void createOrdensTransformacao() throws SQLException {
-        Object[][] data = db.getTransform();
-        this.OTTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade"}));
+    public void actionPerformed2(ActionEvent l){
+        System.exit(0);
     }
 
-    private void createTransformacaoDecorrer() throws SQLException {
-        Object[][] data = db.getElapseTransform();
-        this.TADTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade"}));
-    }
-
-    private void createEstatisticasMaquinas() {
-        Object[][] data={ {"Num de Peças"}, {"Tempo"} };
-
-        this.EstatisticasMaquinasTable.setModel(new DefaultTableModel(data, new String[] {"Peças", "Maquina 1", "Maquina 2", "Maquina 3", "Maquina 4", "Maquina 5", "Maquina 6", "Maquina 7", "Maquina 8" }));
-
-        TableColumnModel columns = this.EstatisticasMaquinasTable.getColumnModel();
-        columns.getColumn(0).setMinWidth(100);
-        columns.getColumn(1).setMinWidth(50);
-        columns.getColumn(2).setMinWidth(50);
-        columns.getColumn(3).setMinWidth(50);
-        columns.getColumn(4).setMinWidth(50);
-        columns.getColumn(5).setMinWidth(50);
-        columns.getColumn(6).setMinWidth(50);
-        columns.getColumn(7).setMinWidth(50);
-        columns.getColumn(8).setMinWidth(50);
+    private void createArmazem() throws SQLException {
+        Object[][] data = db.getCurrentStores();
+        this.ArmazemTable.setModel(new DefaultTableModel(data, new String[]{"Tipo de Peça", "Quantidade"}));
+        TableColumnModel columns = this.ArmazemTable.getColumnModel();
         DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
         centerRender.setHorizontalAlignment(JLabel.CENTER);
         columns.getColumn(0).setCellRenderer(centerRender);
         columns.getColumn(1).setCellRenderer(centerRender);
-        columns.getColumn(2).setCellRenderer(centerRender);
-        columns.getColumn(3).setCellRenderer(centerRender);
-        columns.getColumn(4).setCellRenderer(centerRender);
-        columns.getColumn(5).setCellRenderer(centerRender);
-        columns.getColumn(6).setCellRenderer(centerRender);
-        columns.getColumn(7).setCellRenderer(centerRender);
-        columns.getColumn(8).setCellRenderer(centerRender);
 
+    }
+    private void createOrdensTransformacao() throws SQLException { //Transformações fituras
+        Object[][] data = db.getTransform();
+        this.OTTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade", "MaxDelay" , "InitPenalty", "Chegada ao MES", "TT Excepted"}));
+    }
+
+    private void createTransformacaoDecorrer() throws SQLException {
+        Object[][] data = db.getElapseTransform();
+        this.TADTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade", "MaxDelay" , "InitPenalty", "Chegada ao MES", "Lado", "Início"}));
+    }
+
+    private void createTransformacaoRealizadas() throws SQLException {
+        Object[][] data = db.getEndTransform();
+        this.TRTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Peça Inicial","Peça Final", "Quantidade", "MaxDelay" , "InitPenalty", "Chegada ao MES", "Lado", "Início", "Fim", "Tempo de Transformação", "Penalty"}));
+    }
+
+    private void createDescarregadas() throws SQLException { //DescargasRealizadas
+        Object[][] data = db.getUnloaded();
+        this.DescarregadasTable.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Tipo de Peça","Destino", "Quantidade"}));
+
+    }
+
+    private void createDescargasARealizar() throws SQLException {
+        Object[][] data = db.getUnload();
+        this.DescargasADecorrer.setModel(new DefaultTableModel(data,new String[]{"NºOrdem","Tipo de Peça","Destino", "Quantidade"}));
+    }
+
+    private void createMaquinas() throws SQLException {
+        Object[][] data = db.getMaquinas();
+        this.TablesMaquina.setModel(new DefaultTableModel(data, new String[] {"Máquina", "P1-P2", "P2-P3", "P3-P4", "P4-P5", "P5-P6", "P6-P7", "P6-P8", "P5-P9", "Total" }));
+    }
+
+    private void createPusher() throws SQLException {
+        Object[][] data = db.getPusher();
+        this.TablesPusher.setModel(new DefaultTableModel(data, new String[] {"Pusher", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "Total"}));
+    }
+
+    private void createTemposMaquinas() throws SQLException {
+        Object[][] data = db.getTemposMaquinas();
+        this.TablesTemposMaquinas.setModel(new DefaultTableModel(data, new String[] {"Máquina", "P1-P2", "P2-P3", "P3-P4", "P4-P5", "P5-P6", "P6-P7", "P6-P8", "P5-P9", "Total" }));
     }
 
     public JPanel getRootPanel() {
         return Conjunto;
     }
+
+
 }
